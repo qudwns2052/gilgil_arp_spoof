@@ -20,7 +20,6 @@
 #include "get_my_info.h"
 #include "protocol_structure.h"
 
-using namespace std;
 
 #define ETHER_HEADER_SIZE  14
 #define ARP_HEADER_SIZE 28

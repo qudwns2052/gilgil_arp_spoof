@@ -4,7 +4,7 @@
 void get_mac(pcap_t* handle, char * dev, uint8_t * Sender_IP, uint8_t * Sender_MAC)
 {
 
-    const u_char * ARP_REQ_PACKET = (u_char*)malloc(sizeof(u_char) *(ETHER_HEADER_SIZE+ARP_HEADER_SIZE));
+    u_char * ARP_REQ_PACKET = (u_char*)malloc(sizeof(u_char) *(ETHER_HEADER_SIZE+ARP_HEADER_SIZE));
     ETH_header * eth_REQ = (ETH_header *)ARP_REQ_PACKET;
     ARP_header * arp_REQ = (ARP_header *)(ARP_REQ_PACKET+ETHER_HEADER_SIZE);
     uint8_t My_MAC[6];
@@ -70,7 +70,7 @@ void get_mac(pcap_t* handle, char * dev, uint8_t * Sender_IP, uint8_t * Sender_M
     }
     /*************************************************************************************************/
 
-    free((char*)ARP_REQ_PACKET);
+    free(ARP_REQ_PACKET);
 
     
 }
@@ -95,7 +95,7 @@ bool arp_infection(pcap_t* handle, char * dev, uint8_t * Sender_IP, uint8_t * Ta
     /*      Make ARP Reply Packet      */
 
     printf("----------------Let's Make ARP Reply Packet-----------------\n");
-    const u_char * ARP_REP_PACKET = (u_char*)malloc(sizeof(u_char) *(ETHER_HEADER_SIZE+ARP_HEADER_SIZE));
+    u_char * ARP_REP_PACKET = (u_char*)malloc(sizeof(u_char) *(ETHER_HEADER_SIZE+ARP_HEADER_SIZE));
     ETH_header * eth_REP = (ETH_header *)ARP_REP_PACKET;
     ARP_header * arp_REP = (ARP_header *)(ARP_REP_PACKET+ETHER_HEADER_SIZE);
     memcpy(eth_REP->dmac, Sender_MAC, 6);
@@ -122,5 +122,5 @@ bool arp_infection(pcap_t* handle, char * dev, uint8_t * Sender_IP, uint8_t * Ta
 
     /*************************************************************************************************/
 
-    free((char *)ARP_REP_PACKET);
+    free(ARP_REP_PACKET);
 }
